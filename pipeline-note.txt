@@ -1,0 +1,132 @@
+def  GIT_BRANCH = 'main'
+def  GIT_REPOSITORY_URL = 'https://github.com/gamepkw/game-jenkins-app.git'
+def  APP_NAME = 'go-app'
+def  APP_VERSION = 'latest'
+def  DOCKER_HUB_ACCESS_TOKEN = credentials('dckr_pat_BYPDZB3SNY5NjdJsKKS1lzOBCkM')
+def  IMAGE_REPOSITORY = 'docker.io/gamepkw/test-service-a'
+
+def  NAMESPACE_NAME = 'test-service-a-namespace'
+def  DEPLOYMENT_NAME = 'test-service-a-deployment'
+def  SERVICE_NAME = 'test-kube-nodeport-service'
+
+pipeline {
+    agent any
+
+    tools {
+        go 'go'
+    }
+    environment {
+        SCANNER_HOME=tool 'sonar-scanner'
+        DOCKER_CREDENTIALS = credentials('docker-secret')
+    }
+    stages {
+
+        stage('Clean') {
+            steps {
+                script {
+                    cleanWs()
+                    sh "docker images --format '{{.Repository}}:{{.Tag}}' | grep '^${APP_NAME}' | xargs -I {} docker rmi -f {}"
+                    sh "docker images --format '{{.Repository}}:{{.Tag}}' | grep '^${IMAGE_REPOSITORY}' | xargs -I {} docker rmi -f {}"
+                    def unusedImages = sh(script: 'docker images | grep "<none>" | awk \'{print $3}\'', returnStdout: true).trim()
+                    if (unusedImages) {
+                        def imageIds = unusedImages.split()
+                        imageIds.each { imageId ->
+                            sh "docker rmi -f $imageId"
+                        }
+                    } else {
+                        echo "No images with '<none>' tag found."
+                    }
+                }
+            }
+        }
+        stage('Git') {
+            steps {
+                script {
+                    git branch: "${GIT_BRANCH}", url: "${GIT_REPOSITORY_URL}"
+                    try {
+                        appVersion = sh(returnStdout: true, script: 'git tag --contains | tail -1 | grep -E "^[0-9]+\\.[0-9]+\\.[0-9]+$"').trim()
+                        if (appVersion) {
+                            APP_VERSION = appVersion
+                        }
+                    } catch (Exception e) {
+                        echo "No valid version tag found. Using default version."
+                    }
+                }
+            }
+        }
+        stage("Sonarqube") {
+            steps {
+                script {
+                    withSonarQubeEnv('sonar-server') {
+                        sh "${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectName=${APP_NAME} -Dsonar.projectKey=${APP_NAME}"
+                    }
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+                }
+            }
+        }
+        stage('Install') {
+            steps {
+                script {
+                    sh "go mod tidy"
+                }
+            }
+        }
+       stage('OWASP') {
+            steps {
+                script {
+                    sh 'go mod download'
+                    dependencyCheck additionalArguments: '--format HTML --format XML --scan ./go.sum --out . --enableExperimental', odcInstallation: 'dp-check'
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                }
+            }
+        }
+       stage('Build') {
+            steps {
+                script {
+                    sh "docker build -t ${IMAGE_REPOSITORY}:${APP_VERSION} ."
+                }
+            }
+        }
+        stage('Trivy') {
+            steps {
+                script {
+                    def trivyOutput = sh(script: "trivy image -f table ${IMAGE_REPOSITORY}:${APP_VERSION}", returnStdout: true).trim()
+                    writeFile file: "${APP_NAME}-trivy-report.html", text: "<pre>${trivyOutput}</pre>"
+                    archiveArtifacts artifacts: "${APP_NAME}-trivy-report.html", onlyIfSuccessful: true
+                }
+            }
+        }
+        stage('Docker') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker-secret', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        echo "Username: ${USERNAME}"
+                        echo "Password: ${PASSWORD}"
+                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                    }
+                }
+            }
+        }
+        stage('Push') {
+            steps {
+                script {
+                    def imageId = sh(script: "docker images -q ${IMAGE_REPOSITORY}:${APP_VERSION}", returnStdout: true).trim()
+                    sh "docker push ${IMAGE_REPOSITORY}:${APP_VERSION}"
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    sh "kubectl create namespace ${NAMESPACE_NAME} --dry-run=client -o yaml | kubectl apply -f -"
+
+                    sh "kubectl delete deployment ${DEPLOYMENT_NAME} -n ${NAMESPACE_NAME} --ignore-not-found=true"
+
+                    sh "kubectl create deployment ${DEPLOYMENT_NAME} -n ${NAMESPACE_NAME} --image ${IMAGE_REPOSITORY}:${APP_VERSION}"
+
+                    sh "kubectl expose deployment ${DEPLOYMENT_NAME} -n ${NAMESPACE_NAME} --type=NodePort --port=80 --target-port=8090"
+                }
+            }
+        }
+    }
+}

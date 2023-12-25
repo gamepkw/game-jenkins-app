@@ -1,0 +1,142 @@
+git add .
+git commit -m "commit"
+git push -u origin master
+
+docker build -t test-service-a:1.0 .
+
+docker run -d -p 8090:8090 --network="host" --name test-kube-mysql test-kube-image-mysql:1.0
+docker run -d  --network="host" --name test-kube-mysql test-kube-image-mysql:1.0
+docker run -d -p 3306:3306 --network="host" --name banking-mysql gamepkw/mysql-banking:latest
+docker run -d -p 8090:8090 --name test-kube gamepkw/test-kube-image:latest
+docker run -d -p 8090:80 --name test-kube test-kube-image:1.0
+
+docker network connect my-network 52740a60d1a734255d380a7012e29995e1225fcde0ceba8be878631dca4407d4
+
+docker run --network my-network -p 8070:8070 --name account-banking-microservice account-banking-microservice-image:1.0
+
+docker run -it --entrypoint sh 6e0a119e9ce2e05386685db556e1a8c976bf197d6ead270fd79788d223db56ad
+
+docker run -it 6e0a119e9ce2e05386685db556e1a8c976bf197d6ead270fd79788d223db56ad sh
+
+docker run -it -p 8070:8070 --network=banking-network 6e0a119e9ce2e05386685db556e1a8c976bf197d6ead270fd79788d223db56ad sh
+
+docker inspect dfaf3c57dce84ccaeea59b83b40b290ec693e5fcbfacd0747eb0c1e7a1454287
+
+docker logs 7780333094bbf482046039c350c824ab92c0de823fb33b41c975c921535bd323
+
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' dfaf3c57dce84ccaeea59b83b40b290ec693e5fcbfacd0747eb0c1e7a1454287
+
+docker run -p 8070:8070 6e0a119e9ce2e05386685db556e1a8c976bf197d6ead270fd79788d223db56ad
+
+docker tag account-banking-microservice-image:1.0 103.99.11.188/account-banking-microservice-image:1.0
+
+docker push 103.99.11.188/account-banking-microservice-image:1.0
+
+curl -I https://103.99.11.188
+
+docker login 103.99.11.188
+
+ssh root@103.99.11.188
+hA7$5Om33g$a
+
+sudo iptables -A INPUT -p tcp --dport 2375 -s 115.87.79.197 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 2376 -s 115.87.79.197 -j ACCEPT
+sudo ufw allow from 115.87.79.197 to any port 2375
+sudo ufw allow from 115.87.79.197 to any port 2376
+
+docker tag test-kube-image 103.99.11.188/test-kube-image:1.0
+
+export DOCKER_HOST=ssh://root@103.99.11.188
+
+ssh-keygen -t rsa -b 4096 -C "game9074@gmail.com"
+
+ssh -i ~/.ssh/id_rsa root@103.99.11.188
+
+ls ~/.ssh/
+cd ~/.ssh/
+
+id_rsa
+
+docker-machine create --driver generic --generic-ssh-key ~/.ssh/id_rsa 103.99.11.188
+
+ssh -i ~/.ssh/id_rsa root@103.99.11.188
+ssh-add ~/.ssh/id_rsa
+ssh -v -i ~/.ssh/id_rsa root@103.99.11.188
+
+docker tag test-kube-image:1.0 103.99.11.188/test-kube-image:1.0
+docker push 103.99.11.188/test-kube-image:1.0
+
+docker-machine create --driver generic --generic-ip-address=103.99.11.188 --generic-ssh-user=root --engine-opt api-cors-header="*"
+
+game9074@gmail.com
+Game31008%
+
+docker pull test-kube-image:1.0
+
+docker pull docker.io/gamepkw/test-kube-remote-image
+docker push gamepkw/test-kube-remote-image:latest
+docker build -t gamepkw/test-kube-image:latest .
+
+docker push gamepkw/test-kube-image:latest
+docker build -t gamepkw/test-kube-image:latest .
+
+docker run -d -p 8090:8090 --name test-kube gamepkw/test-kube-remote-image
+
+docker ps -f "name=a304ecd38114ad8f8ffdc551bd35cfde910e6ce3beea66e6929cda2c1d17f1c5"
+docker container rm 2d12ebf9e1d09c72f82e91b4ac1ae982616ed6e65c8ae32511039f479b4c7778
+docker image rm gamepkw/test-kube-remote-image
+
+docker build -t gamepkw/test-kube-remote-image:latest .
+
+docker logs 0429f726766f714179dbdd7e48bd9dd2839b294e57e6d9239a09417a92dbcc8c
+
+docker build --platform linux/amd64 -t gamepkw/test-kube-remote-image:latest .
+docker build -t gamepkw/test-kube-remote-image:latest .
+
+docker exec -it test-kube /bin/bash
+
+export PATH="/opt/homebrew/bin:$PATH"
+
+cd /Users/pakawatbamrungkit/golang/test_kube
+
+docker build -t gamepkw/test-kube-pods-image:latest .
+docker push gamepkw/test-kube-pods-image:latest
+
+kubectl apply -f prometheus/prometheus.yml
+
+
+helm install grafana grafana/grafana -n test-kube-namespace
+
+grafana cli --homepath "/usr/share/grafana" admin reset-admin-password Game31008%
+
+helm uninstall prometheus -n default
+
+admin
+nf1b2nq7gqvutrgQOwJzEQ2urlOGNwhzWlFlaPC9
+kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+
+docker run --network=my-network
+docker run -d -p 8090:8090 --network=my-network --name test-kube-mysql test-kube-image-mysql:1.0
+
+docker run --network [network] [container]
+
+docker exec 780fc151be99ac4b835a20c20b26cd39f163b30c4f1f39f9d91bc0efd4b14a97 ping 52740a60d1a734255d380a7012e29995e1225fcde0ceba8be878631dca4407d4 -c2
+
+docker inspect -f '{{range $key, $value := .NetworkSettings.Networks}}{{$key}} {{end}}' test-kube-mysql
+docker inspect -f '{{range $key, $value := .NetworkSettings.Networks}}{{$key}} {{end}}' atm4-mysql-1
+docker network inspect -f '{{range .Containers}}{{.Name}} {{end}}' my-network
+
+docker tag your-image-name:tag new-image-name:tag
+docker tag confluentinc/cp-kafka:latest gamepkw/kafka-banking:latest
+docker push gamepkw/kafka-banking:latest
+docker pull gamepkw/mysql-banking:latest
+
+docker tag test-service-a:1.0 docker.io/gamepkw/test-service-a:1.0
+docker push docker.io/gamepkw/test-service-a:1.0
+
+docker rmi gamepkw/banking:latest
+
+docker run --name banking-mysql -e MYSQL_ROOT_PASSWORD=P@ssw0rd -d gamepkw/mysql-banking:latest
+docker exec -it banking-mysql mysql -uroot -p
+
+docker buildx build --platform linux/amd64 -t gamepkw/mysql-banking:latest .

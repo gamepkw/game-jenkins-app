@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-service-a-cluster-ip-service
+  namespace: test-service-a-namespace
+spec:
+  type: ClusterIP
+  selector:
+    app: test-service-a-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8082

@@ -1,0 +1,27 @@
+version: '3'
+
+networks:
+  test_kube_default:
+
+
+services:
+
+  banking-mysql:
+    image: bdfb0ec4d54ad6c6f51e03ce444f792731ac97d79c4575ee74e291b01b6a4bed
+    environment:
+      MYSQL_ROOT_PASSWORD: P@ssw0rd
+    ports:
+      - "3306:3306"
+    networks:
+      - test_kube_default
+
+  test-kube-mysql:
+    image: 7a9232c6bac37dab247443152866ec1c4e1d3d1d1f5cc7eca30402bc560a1e1b
+    ports:
+      - "8090:8090"
+    depends_on:
+      - banking-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: P@ssw0rd
+    networks:
+      - test_kube_default

@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-service-a-deployment
+  namespace: test-service-a-namespace
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: test-service-a-app
+  template:
+    metadata:
+      labels:
+        app: test-service-a-app
+    spec:
+      containers:
+        - name: test-service-a-pod
+          image: docker.io/gamepkw/test-service-a:latest
+          ports:
+            - containerPort: 8090

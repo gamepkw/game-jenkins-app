@@ -1,0 +1,162 @@
+kubectl get -n test-service-a-namespace pods
+kubectl get -n test-service-a-namespace deployments
+kubectl get deployments
+kubectl get -n test-service-a-namespace services
+kubectl get services
+kubectl get -n test-service-a-namespace ingress
+
+kubectl delete -n test-service-a-namespace --all ingress 
+kubectl delete deployments --all
+kubectl delete services --all
+
+kubectl delete -n test-service-a-namespace services grafana
+kubectl delete -n test-service-a-namespace services grafana-ext
+kubectl delete -n test-service-a-namespace services prometheus-alertmanager
+kubectl delete -n test-service-a-namespace services prometheus-alertmanager-headless
+kubectl delete -n test-service-a-namespace services prometheus-kube-state-metrics
+kubectl delete -n test-service-a-namespace services prometheus-prometheus-node-exporter
+kubectl delete -n test-service-a-namespace ingress test-kube-ingress
+
+kubectl scale deployment --replicas=1 -n test-service-a-namespace test-kube-deployment
+kubectl scale deployment --replicas=5 -n test-service-a-namespace test-kube-deployment
+kubectl scale deployment --replicas=10 -n test-service-a-namespace test-kube-deployment
+
+kubectl scale deployment test-kube-deployment --replicas=1
+
+kubectl get all -n default
+kubectl get all -n test-service-a-namespace
+
+kubectl rollout restart deployment test-kube-deployment
+
+kubectl apply -f deployment.yaml -n test-service-a-namespace
+kubectl apply -f service.yaml
+kubectl apply -f service-cluster.yaml
+kubectl apply -f pod.yaml
+kubectl apply -f service-nodeport.yaml
+kubectl apply -f service-monitor.yaml
+kubectl apply -f ingress.yaml
+
+kubectl describe deployment -n test-service-a-namespace
+kubectl describe service test-kube-service
+kubectl describe pod test-pod
+
+kubectl logs -n test-service-a-namespace test-service-a-deployment-65f4dfd859-2jcq5
+
+kubectl delete pod <pod-name> --grace-period=0 --force
+
+http://<node-ip>:<node-port>/get-all-transaction
+http://10.107.33.84:8090/get-all-transaction
+
+kubectl get service test-kube-service
+
+kubectl logs -f test-kube-deployment-56b7d98cc7-fbhm6
+
+http://myservice.mynamespace.svc.cluster.local:80
+
+http://test-kube-service.default.svc.cluster.local:80
+
+http://test-kube-service.svc.cluster.local:80\
+
+kubectl exec -it test-kube-deployment-56b7d98cc7-fbhm6 -- /bin/bash
+
+nslookup test-kube-service
+
+test-kube-service.default.svc.cluster.local
+curl http://test-kube-service.default.svc.cluster.local
+
+curl http://192.168.49.2:8090/get-all-transaction
+
+kubectl create namespace test-service-a-namespace
+
+kubectl logs -n test-service-a-namespace test-kube-deployment-56b7d98cc7-77bnx
+
+kubectl get nodes -o wide
+
+kubectl describe node <node-name>
+
+192.168.49.2:80
+
+kubectl cluster-info
+
+minikube dashboard
+kubectl config view
+kubectl proxy
+http://127.0.0.1:8001/api/v1/namespaces/default/services/test-kube-service/proxy/
+http://127.0.0.1:8001/api/v1/namespaces/default/services/test-kube-service/proxy/path/to/your/resource
+http://127.0.0.1:8001/api/v1/namespaces/test-service-a-namespace/services/test-kube-service/proxy/get-all-transaction
+
+
+kubectl expose service prometheus-server --type=NodePort --target-port=9091 --name=prometheus-server-ex
+
+minikube service grafana-ext -n test-service-a-namespace
+kubectl expose service test-kube-grafana --type=NodePort --target-port=3000 --name=grafana-ext -n test-service-a-namespace
+
+kubectl get secret --namespace test-service-a-namespace test-kube-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+QiMtLHS6wfcfYUq7cqpTtmKNHTWFWxt6pRQb7arA
+export POD_NAME=$(kubectl get pods --namespace test-service-a-namespace -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=my-grafana" -o jsonpath="{.items[0].metadata.name}")
+
+helm install test-kube-prometheus prometheus-community/prometheus --namespace test-service-a-namespace
+
+kubectl expose service test-kube-prometheus-server --type=NodePort --target-port=9090 --name=prometheus-server-ext --namespace test-service-a-namespace
+minikube service prometheus-server-ext -n test-service-a-namespace
+
+helm uninstall test-kube-prometheus --namespace test-service-a-namespace
+helm uninstall test-kube-grafana --namespace test-service-a-namespace
+
+helm install test-kube-grafana grafana/grafana --namespace test-service-a-namespace
+M2fA3wM2J94UiM6b2jqOpwgJuJAVyRkha52oW1ry
+
+kubectl expose service test-kube-grafana --type=NodePort --target-port=3000 --name=grafana-ext --namespace test-service-a-namespace
+minikube service grafana-ext -n test-service-a-namespace
+
+kubectl --namespace test-service-a-namespace port-forward test-kube-prometheus-server-58ddf69bf-sr78m 9090
+
+kubectl apply -f prometheus/prometheus.yaml
+kubectl apply -f grafana/grafana.yaml
+
+kubectl get secrets -n kube-system
+kubectl describe secret kubernetes-dashboard-c8b7d9fd-pjhfw -n kube-system
+
+kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep default-token | awk '{print $1}')
+kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep default-token | awk '/^deployment-controller-token-/{print $1}') | awk '$1=="token:"{print $2}'
+
+
+kubectl create serviceaccount dashboard -n test-service-a-namespace
+kubectl create clusterrolebinding dashboard-admin -n test-service-a-namespace --clusterrole=cluster-admin --serviceaccount=default:dashboard
+kubectl get secret $(kubectl get serviceaccount dashboard -o jsonpath="{.secrets[0].name}") -o jsonpath="{.data.token}" | base64 --decode
+
+kubectl apply -f create-service-cccount.yaml
+
+kubectl logs test-kube-ingress -n test-service-a-namespace
+kubectl get ingress -n test-service-a-namespace -o wide
+
+kubectl get clusterrolebinding nginx-ingress-clusterrole-nisa-binding -o yaml
+
+kubectl apply -f nginx-ingress.yaml
+
+kubectl get pods -n ingress-nginx
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install test-kube-nginx-ingress ingress-nginx/ingress-nginx --namespace test-service-a-namespace
+kubectl get pods -n test-service-a-namespace
+
+kubectl describe pods -n test-service-a-namespace test-kube-nginx-ingress-ingress-nginx-controller-69d6477dc956s8
+
+kubectl --namespace test-service-a-namespace get services -o wide -w test-kube-nginx-ingress-ingress-nginx-controller
+
+kubectl logs -n ingress-nginx ingress-nginx-controller-7cb7b799bd-g8tzn
+
+kubectl apply -f service-load.yaml
+
+kubectl get -n ingress-nginx pods
+kubectl get -n ingress-nginx deployments
+kubectl logs ingress-nginx-controller-7cb7b799bd-g8tzn -n ingress-nginx
+kubectl rollout restart deployment ingress-nginx-controller -n ingress-nginx
+
+minikube addons enable ingress
+
+kubectl apply -f deployment.yaml -n test-service-a-namespace
+kubectl create namespace test-service-a-namespace
+
+http://127.0.0.1:8001/api/v1/namespaces/test-service-a-namespace/services/test-kube-service/proxy/get-all-transaction

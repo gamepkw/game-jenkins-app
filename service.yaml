@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-kube-service
+spec:
+  selector:
+    app: test-kube-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8090
+
+#test-kube-service   ClusterIP   10.111.77.91   <none>        80/TCP

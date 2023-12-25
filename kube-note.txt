@@ -1,0 +1,31 @@
+docker build -t test-service-a:latest .
+docker tag test-service-a:latest docker.io/gamepkw/test-service-a:latest
+docker push docker.io/gamepkw/test-service-a:latest
+
+kubectl create namespace test-service-a-namespace
+
+kubectl apply -f deployment.yaml -n test-service-a-namespace
+kubectl apply -f service.yaml -n test-service-a-namespace
+kubectl apply -f cluster-ip-service.yaml -n test-service-a-namespace
+kubectl apply -f pod.yaml -n test-service-a-namespace
+kubectl apply -f service-nodeport.yaml -n test-service-a-namespace
+kubectl apply -f service-monitor.yaml -n test-service-a-namespace
+kubectl apply -f ingress.yaml -n test-service-a-namespace
+
+kubectl get -n test-service-a-namespace pods
+kubectl get -n test-service-a-namespace deployments
+kubectl get -n test-service-a-namespace services
+kubectl get -n test-service-a-namespace ingress
+
+kubectl proxy
+
+http://127.0.0.1:8001/api/v1/namespaces/test-service-a-namespace/services/test-service-a-cluster-ip-service/proxy/get
+
+kubectl logs -n test-service-a-namespace -f deployment/test-service-a-deployment
+kubectl logs -n test-service-b-namespace -f deployment/test-service-b-deployment
+
+kubectl scale deployment --replicas=0 -n test-service-a-namespace test-service-a-deployment
+kubectl scale deployment --replicas=3 -n test-service-a-namespace test-service-a-deployment
+
+kubectl delete -n test-service-a-namespace deployment test-service-a-deployment
+kubectl delete namespace test-service-a-namespace

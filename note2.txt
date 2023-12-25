@@ -1,0 +1,103 @@
+kubectl delete pods prometheus-operator
+kubectl delete pods prometheus-prometheus-pushgateway
+kubectl delete pods prometheus-server-ex
+kubectl delete pods prometheus-server-ext
+kubectl delete pods prometheus-kube-state-metrics
+kubectl delete pods prometheus-prometheus-node-exporter
+kubectl delete services prometheus-server-ext -n test-kube-namespace
+
+kubectl delete deployments test-kube-grafana-577b44c484-gjnvh -n test-kube-namespace
+kubectl delete deployments test-kube-prometheus-alertmanager-0 -n test-kube-namespace
+kubectl delete deployments test-kube-prometheus-kube-state-metrics-c8b79db75-g89nf -n test-kube-namespace
+kubectl delete deployments test-kube-prometheus-prometheus-node-exporter-2klsk -n test-kube-namespace
+kubectl delete pods test-kube-prometheus-prometheus-pushgateway-846d7b99db-jg9kz -n test-kube-namespace
+kubectl delete pods test-kube-prometheus-server-58ddf69bf-cd5md -n test-kube-namespace
+
+kubectl delete deployments test-service-a-deployment -n test-kube-namespace
+kubectl delete deployments test-kube-prometheus-kube-state-metrics -n test-kube-namespace
+kubectl delete deployments test-kube-prometheus-prometheus-pushgateway -n test-kube-namespace
+kubectl delete deployments test-kube-prometheus-server -n test-kube-namespace
+
+minikube start --driver=docker -n test-kube-namespace
+
+kubectl delete -n test-kube-namespace pods nginx-ingress-ingress-nginx-controller-78948fc547-7w72b
+
+helm uninstall test-kube-nginx-ingress --namespace test-kube-namespace
+
+kubectl describe pods ingress-nginx-controller-7cb7b799bd-g8tzn -n ingress-nginx
+
+i want to use nginx ingress for kubenetes here is my requirements
+1. use for local server only
+2. my container port is 8090
+3. my host name is my-banking-pakawat.com
+4. my example endpoint http://127.0.0.1:8001/api/v1/namespaces/test-kube-namespace/services/test-kube-service/proxy and want to minimize to be http://my-banking-pakawat.com
+5. kube proxy listern on 127.0.0.1:8001
+
+
+docker tag gamepkw/test-kube-pods-image:latest docker.io/gamepkw/test-kube-pods-image:latest
+docker push docker.io/gamepkw/test-kube-pods-image:latest
+
+kubectl get -n test-kube-namespace deployments
+kubectl get -n test-kube-namespace pods test-kube-nginx-ingress-ingress-nginx-controller
+kubectl delete deployments test-kube-deployment -n test-kube-namespace
+kubectl apply -n test-kube-namespace -f deployment.yaml
+kubectl logs -n test-kube-namespace -f deployment/test-kube-deployment
+
+kubectl logs -n test-kube-namespace -f ingress test-kube-ingress
+
+kubectl logs -n test-kube-namespace test-kube-nginx-ingress-ingress-nginx-controller-69d6477dc5rgx7
+
+kubectl apply -n test-kube-namespace -f service-cluster.yaml
+kubectl apply -n test-kube-namespace -f deployment.yaml
+kubectl apply -n test-kube-namespace -f service-ingress.yaml
+kubectl apply -n test-kube-namespace -f ingress.yaml
+kubectl apply -n test-kube-namespace -f service.yaml
+kubectl apply -n test-kube-namespace -f cluster-ip-service.yaml
+kubectl apply -n test-kube-namespace -f loadbalancer-service.yaml
+kubectl apply -n test-kube-namespace -f cluster-ip-service.yaml
+kubectl apply -n test-kube-namespace -f nodeport-service.yaml
+
+loadbalancer-service
+
+
+kubectl get all -n test-kube-namespace
+
+kubectl logs -n kube-system kube-proxy-8dr2b
+kubectl get svc -n test-kube-namespace test-kube-service
+
+curl http://10.110.76.173
+
+
+192.168.49.2 my-banking-pakawat.com
+
+
+kubectl logs -n ingress-nginx test-kube-ingress
+
+http://192.168.49.2:80/
+
+kubectl delete namespace test-kube-namespace
+
+kubectl get services -n test-kube-namespace
+kubectl get pods -n test-kube-namespace
+
+kubectl run -it --rm curl --image=curlimages/curl -- sh
+
+curl http://test-kube-cluster-ip-service.test-kube-app.svc.cluster.local
+
+http://192.168.49.2:32138/test-kube-app
+
+http://10.107.144.90:8090/
+
+kubectl get -n test-kube-namespace deployment/test-kube-deployment
+kubectl logs -n test-kube-namespace -f deployment/test-kube-deployment
+
+kubectl delete deployments test-service-a-deployment -n test-service-a-namespace
+
+kubectl logs -n test-service-a-namespace -f test-service-a-deployment-5c97c77488-2fxp9
+
+docker image inspect docker.io/gamepkw/test-service-a:1.1
+
+sh "docker login -u gamepkw -p dckr_pat_BYPDZB3SNY5NjdJsKKS1lzOBCkM"
+
+kubectl create deployment test-service-a-deployment -n test-service-a-namespace --image docker.io/gamepkw/test-service-a:latest
+kubectl expose deployment test-service-a-deployment -n test-service-a-namespace --type=NodePort --port=80 --target-port=8090

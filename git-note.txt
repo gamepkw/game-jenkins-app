@@ -1,0 +1,9 @@
+echo "# game-jenkins-app" >> README.md                                                                                                                                                                                       128 ✘  12:07:59 
+git init
+git add .
+git commit -m "commit"
+git branch -M main
+git remote add origin https://github.com/gamepkw/game-jenkins-app.git
+git push -u origin main
+
+https://github.com/gamepkw/game-jenkins-app

@@ -1,0 +1,15 @@
+docker network create test-kube-network
+docker network ls
+docker network rm test-kube-network
+docker exec -it container1 /bin/bash
+
+docker network connect test-kube-network 52740a60d1a734255d380a7012e29995e1225fcde0ceba8be878631dca4407d4
+docker network inspect test-kube-network
+
+docker build -t test-kube-image-mysql:1.0 .
+
+docker run -d -p 8090:8090 --network="test_kube_default" --name test-kube-mysql test-kube-image-mysql:1.0
+docker run -d  --network="host" --name test-kube-mysql test-kube-image-mysql:1.0
+docker run -d -p 3306:3306 --network="host" --name banking-mysql gamepkw/mysql-banking:latest
+docker run -d -p 8090:8090 --name test-kube gamepkw/test-kube-image:latest
+docker run -d -p 8090:80 --name test-kube test-kube-image:1.0
