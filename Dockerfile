@@ -13,8 +13,6 @@ RUN go mod download
 # Copy the local package files to the container's working directory
 COPY . .
 
-COPY cmd /app/cmd
-
 # Build the binary (assuming main.go is in the cmd folder)
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd
 
