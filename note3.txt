@@ -1,2 +1,6 @@
 docker run --name jenkins -u root -d -v jenkins_home:/var/jenkins_home -v $(which docker):/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -p 8080:8080 -p 50000:50000 --restart=on-failure jenkins/jenkins:lts-jdk17;
 0063ecfa1ba4e6b0c278bc5f41719307b602236f5414ad078e49c9f77e98f0aa
+
+docker exec -it ae8969c097f2 /bin/bash
+
+/home/pakawat/jenkins_home/.kube/config

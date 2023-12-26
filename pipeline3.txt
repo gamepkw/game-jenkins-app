@@ -2,7 +2,6 @@ def  GIT_BRANCH = 'main'
 def  GIT_REPOSITORY_URL = 'https://github.com/gamepkw/game-jenkins-app.git'
 def  APP_NAME = 'go-app'
 def  APP_VERSION = 'latest'
-def  DOCKER_HUB_ACCESS_TOKEN = credentials('dckr_pat_BYPDZB3SNY5NjdJsKKS1lzOBCkM')
 def  IMAGE_REPOSITORY = 'docker.io/gamepkw/test-service-a'
 
 def  NAMESPACE_NAME = 'test-service-a-namespace'
@@ -14,10 +13,7 @@ pipeline {
 
     tools {
         go 'go'
-    }
-    environment {
-        SCANNER_HOME=tool 'sonar-scanner'
-        DOCKER_CREDENTIALS = credentials('docker-secret')
+        dockerTool 'docker'
     }
     stages {
 
@@ -54,29 +50,10 @@ pipeline {
                 }
             }
         }
-        stage("Sonarqube") {
-            steps {
-                script {
-                    withSonarQubeEnv('sonar-server') {
-                        sh "${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectName=${APP_NAME} -Dsonar.projectKey=${APP_NAME}"
-                    }
-                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
-                }
-            }
-        }
         stage('Install') {
             steps {
                 script {
                     sh "go mod tidy"
-                }
-            }
-        }
-       stage('OWASP') {
-            steps {
-                script {
-                    sh 'go mod download'
-                    dependencyCheck additionalArguments: '--format HTML --format XML --scan ./go.sum --out . --enableExperimental', odcInstallation: 'dp-check'
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
             }
         }
@@ -87,22 +64,11 @@ pipeline {
                 }
             }
         }
-        stage('Trivy') {
+        stage('Docker-Auth') {
             steps {
                 script {
-                    def trivyOutput = sh(script: "trivy image -f table ${IMAGE_REPOSITORY}:${APP_VERSION}", returnStdout: true).trim()
-                    writeFile file: "${APP_NAME}-trivy-report.html", text: "<pre>${trivyOutput}</pre>"
-                    archiveArtifacts artifacts: "${APP_NAME}-trivy-report.html", onlyIfSuccessful: true
-                }
-            }
-        }
-        stage('Docker') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'docker-secret', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                        echo "Username: gamepkw"
-                        echo "Password: ${DOCKER_CREDENTIALS}"
-                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_CREDENTIALS}"
+                    withCredentials([usernamePassword(credentialsId: 'docker-secret', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
                     }
                 }
             }

@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: test-kube-nodeport-service
-  namespace: test-kube-namespace
+  name: test-service-a-nodeport-service
+  namespace: test-service-a-namespace
 spec:
   type: NodePort
   selector:
-    app: test-kube-app
+    app: test-service-a-app
   ports:
     - protocol: TCP
       port: 80
